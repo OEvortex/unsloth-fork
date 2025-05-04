@@ -89,8 +89,8 @@ elif (major_torch == 2) and (minor_torch < 2):
 pass
 
 # First check if CUDA is available ie a NVIDIA GPU is seen
-if not torch.cuda.is_available():
-    raise NotImplementedError("Unsloth: No NVIDIA GPU found? Unsloth currently only supports GPUs!")
+if not torch.cuda.is_available() and not torch_xla.core.xla_model.is_tpu_available():
+    raise NotImplementedError("Unsloth: No NVIDIA GPU or TPU found? Unsloth currently only supports GPUs and TPUs!")
 
 # Fix Xformers performance issues since 0.0.25
 import importlib.util
