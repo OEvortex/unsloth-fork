@@ -34,6 +34,8 @@ import os
 import torch_xla
 import torch_xla.core.xla_model as xm
 
+# Correct import statement for AttrsDescriptor
+from triton.compiler import AttrsDescriptor  # AttrsDescriptor is located in triton.compiler
 
 def run(args):
     import torch
