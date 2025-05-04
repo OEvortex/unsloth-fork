@@ -44,6 +44,10 @@ pass
 from huggingface_hub import HfFileSystem
 import importlib.util
 
+# Import torch_xla and torch_xla.core.xla_model
+import torch_xla
+import torch_xla.core.xla_model as xm
+
 # https://github.com/huggingface/transformers/pull/26037 allows 4 bit loading!
 from unsloth_zoo.utils import Version, _get_dtype
 transformers_version = Version(transformers_version)

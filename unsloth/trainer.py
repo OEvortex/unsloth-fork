@@ -30,6 +30,9 @@ from unsloth_zoo.vision_utils import (
 from packaging.version import Version
 import dataclasses
 
+import torch_xla
+import torch_xla.core.xla_model as xm
+
 __all__ = [
     "UnslothTrainingArguments",
     "UnslothTrainer",
@@ -134,6 +137,16 @@ class UnslothTrainer(SFTTrainer):
             )
         pass
         return self.optimizer
+
+    def training_step(self, *args, **kwargs):
+        if xm.xla_device_hw() == 'TPU':
+            device = xm.xla_device()
+            print("Using TPU")
+        else:
+            device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+            print("Using GPU" if torch.cuda.is_available() else "Using CPU")
+        self.model.to(device)
+        return super().training_step(*args, **kwargs)
     pass
 pass
 

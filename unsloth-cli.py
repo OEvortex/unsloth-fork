@@ -31,6 +31,8 @@ Happy fine-tuning!
 
 import argparse
 import os
+import torch_xla
+import torch_xla.core.xla_model as xm
 
 
 def run(args):
@@ -44,6 +46,14 @@ def run(args):
     import logging
     logging.getLogger('hf-to-gguf').setLevel(logging.WARNING)
 
+    # Check for TPU availability and set device accordingly
+    if xm.xla_device_hw() == 'TPU':
+        device = xm.xla_device()
+        print("Using TPU")
+    else:
+        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        print("Using GPU" if torch.cuda.is_available() else "Using CPU")
+
     # Load model and tokenizer
     model, tokenizer = FastLanguageModel.from_pretrained(
         model_name=args.model_name,
@@ -51,6 +61,9 @@ def run(args):
         dtype=args.dtype,
         load_in_4bit=args.load_in_4bit,
     )
+
+    # Move model to the appropriate device
+    model.to(device)
 
     # Configure PEFT model
     model = FastLanguageModel.get_peft_model(
